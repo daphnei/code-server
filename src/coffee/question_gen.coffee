@@ -16,7 +16,7 @@ insertQuestion = (question) ->
   #   switch question.question_type
   #     when 'composition'
 
-make_food = (id, name, genre, value, measure, unit) ->
+make_food = (id, name, genre, value, measure, unit, url) ->
   return {
     id: id
     name: name,
@@ -24,6 +24,7 @@ make_food = (id, name, genre, value, measure, unit) ->
     value: value,
     serving_measure: measure,
     serving_unit: unit,
+    image_url: url
   }
 
 exports.generateQuestions = (type, count) ->
@@ -37,8 +38,8 @@ exports.generateQuestions = (type, count) ->
     unit_for_chosen = units[rand_index]
 
     console.log(chosen_field)
-    queryString = "select t1.Name as Name1, t1.Genre as Genre1, t1.Measure as Measure1, t1.Unit as Unit1, t1.#{chosen_field} as Value1, t1.id as id1,
-                  t2.Name as Name2, t2.Genre as Genre2, t2.Measure as Measure2, t2.Unit as Unit2, t2.#{chosen_field} as Value2, t2.id as id2
+    queryString = "select t1.Name as Name1, t1.Genre as Genre1, t1.Measure as Measure1, t1.Unit as Unit1, t1.#{chosen_field} as Value1, t1.id as id1, t1.url as url1
+                  t2.Name as Name2, t2.Genre as Genre2, t2.Measure as Measure2, t2.Unit as Unit2, t2.#{chosen_field} as Value2, t2.id as id2, t2.url as url2
                   FROM all_foods t1, all_foods t2
                   WHERE t1.#{chosen_field} > 0 and t2.#{chosen_field} > 0
                   AND t1.#{chosen_field} >= 2 * t2.#{chosen_field} AND t1.#{chosen_field} <= 10 * t2.#{chosen_field}
@@ -48,8 +49,8 @@ exports.generateQuestions = (type, count) ->
     chosen_field = fields[rand_index]
     unit_for_chosen = units[rand_index]
 
-    queryString =  "SELECT t1.Name as Name1, t1.Genre as Genre1, t1.Unit as Unit1, t1.Measure as Measure1, t1.#{chosen_field} as Value1, t1.id as id1,
-                           t2.Name as Name2, t2.Genre as Genre2, t2.Unit as Unit2, t2.Measure as Measure2, t2.#{chosen_field} as Value2, t2.id as id2
+    queryString =  "SELECT t1.Name as Name1, t1.Genre as Genre1, t1.Unit as Unit1, t1.Measure as Measure1, t1.#{chosen_field} as Value1, t1.id as id1, t1.url as url1
+                           t2.Name as Name2, t2.Genre as Genre2, t2.Unit as Unit2, t2.Measure as Measure2, t2.#{chosen_field} as Value2, t2.id as id2, t2.url as url2
                     FROM all_foods t1, all_foods t2
                     WHERE t1.#{chosen_field} > 0 AND t2.#{chosen_field} > 0 AND  t2.#{chosen_field} >= 2 AND
                           t1.#{chosen_field} >= 2 * t2.#{chosen_field} AND t1.#{chosen_field} < 5 * t2.#{chosen_field}
@@ -63,8 +64,8 @@ exports.generateQuestions = (type, count) ->
           question_type:type,
           parameter:chosen_field,
           unit: unit_for_chosen,
-          food1: make_food(question.id1, question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1),
-          food2: make_food(question.id2, question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2),
+          food1: make_food(question.id1, question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1, question.url1),
+          food2: make_food(question.id2, question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2, question.url2),
         }
         data_to_send.push(element)
 
