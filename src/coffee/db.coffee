@@ -3,9 +3,10 @@ Q = require 'q'
 
 connection = mysql.createConnection
   host: 'sql3.freemysqlhosting.net'
-  user: 'sql330935'
-  password: 'fW2!cZ8%'
-  database: 'sql330935'
+  user: 'sql331606'
+  password: 'nS5!nZ4*'
+  database: 'sql331606'
+  port: 3306
 
 exports.connectAndQuery = (query, queryArgs=[]) ->
   data = Q.defer()
@@ -41,8 +42,18 @@ doesQuestionExist = (type, food1, food2) ->
 
   weExist.promise
 
+updateQuestionScore = (type, food1, food2, score) ->
+  query = "UPDATE questions SET num_answers = num_answers + 1, total_score = total_score + ? WHERE type = ? AND food1 = ? AND food2 = ?"
+  exports.connectAndQuery query, [score, type, food1, food2]
+
+createQuestion = (type, food1, food2, score) ->
+  query = "INSERT INTO questions (type, food1, food2, num_answers, total_score) VALUES (?, ?, ?, ?, ?)"
+  exports.connectAndQuery query, [type, food1, food2, 1, score]
+
 createQuestionOrUpdateScore = (type, food1, food2, score) ->
   doesQuestionExist(type, food1, food2).then (exists) ->
     if exists
-      {}
+      updateQuestionScore(type, food1, food2, score)
+    else
+      createQuestion(type, food1, food2, score)
       #exports.connectAndQuery 'INSERT INTO questions (type, food1, food2, '
