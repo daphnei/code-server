@@ -41,4 +41,4 @@ app.get '/image', (req, res) ->
     res.status(200)
     res.send(data)
 
-app.listen 3000
+app.listen(process.env.PORT or 3000)
