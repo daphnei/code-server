@@ -23,6 +23,7 @@
   exports.findImage = function(keyword) {
     var deferred, url;
     deferred = Q.defer();
+    keyword = keyword.replace('%', '');
     console.log("In here yo!");
     url = "" + baseUrl + "q=" + keyword + "&cx=" + cx + "&key=" + key + "&num=" + num + "&safe=" + safe + "&searchType=" + searchType + "&rights=cc_publicdomain+cc_noncommercial";
     https.get(url, function(stream) {
@@ -34,6 +35,8 @@
       });
       return stream.on('end', function() {
         var data, imageLink;
+        console.log("Buffer is: ");
+        console.log(buffer);
         data = JSON.parse(buffer);
         console.log(buffer);
         if ((data != null) && (data.items != null) && data.items.length > 0) {
