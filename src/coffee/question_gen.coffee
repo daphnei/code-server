@@ -56,7 +56,10 @@ exports.generateQuestions = (type, count) ->
                     ORDER BY RAND() LIMIT #{count};"
 
   if (queryString != null)
+    console.log "Starting query " + queryString
     db.connectAndQuery(queryString).then (data) ->
+      console.log "Query finished"
+
       data_to_send = []
       for question in data
         element = {
@@ -78,13 +81,15 @@ exports.generateQuestions = (type, count) ->
 exports.generateRandomQuestionSet = (count = 10) ->
   questions = Q.defer()
 
+  console.log "Starting to generate random questions"
   generatedDataPromises = []
-  for i in [0 .. count]
+  for i in [0 ... count]
     types = [exports.a_per_b_question, exports.comparision_question]
     type = types[parseInt(Math.random() * types.length)]
     generatedDataPromises.push(exports.generateQuestions(type, 1))
 
   Q.all(generatedDataPromises).then (allData) ->
+    console.log "Finished getting all data"
     flattenData = _.flatten(allData, true)
     questions.resolve(flattenData)
 

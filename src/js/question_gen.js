@@ -50,8 +50,10 @@
       queryString = "SELECT t1.Name as Name1, t1.Genre as Genre1, t1.Unit as Unit1, t1.Measure as Measure1, t1." + chosen_field + " as Value1, t1.id as id1, t1.url as url1, t2.Name as Name2, t2.Genre as Genre2, t2.Unit as Unit2, t2.Measure as Measure2, t2." + chosen_field + " as Value2, t2.id as id2, t2.url as url2 FROM all_foods t1, all_foods t2 WHERE t1." + chosen_field + " > 0 AND t2." + chosen_field + " > 0 AND  t2." + chosen_field + " >= 2 AND t1." + chosen_field + " >= 2 * t2." + chosen_field + " AND t1." + chosen_field + " < 5 * t2." + chosen_field + " ORDER BY RAND() LIMIT " + count + ";";
     }
     if (queryString !== null) {
+      console.log("Starting query " + queryString);
       db.connectAndQuery(queryString).then(function(data) {
         var data_to_send, element, question, _i, _len;
+        console.log("Query finished");
         data_to_send = [];
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           question = data[_i];
@@ -78,14 +80,16 @@
       count = 10;
     }
     questions = Q.defer();
+    console.log("Starting to generate random questions");
     generatedDataPromises = [];
-    for (i = _i = 0; 0 <= count ? _i <= count : _i >= count; i = 0 <= count ? ++_i : --_i) {
+    for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
       types = [exports.a_per_b_question, exports.comparision_question];
       type = types[parseInt(Math.random() * types.length)];
       generatedDataPromises.push(exports.generateQuestions(type, 1));
     }
     Q.all(generatedDataPromises).then(function(allData) {
       var flattenData;
+      console.log("Finished getting all data");
       flattenData = _.flatten(allData, true);
       return questions.resolve(flattenData);
     });
