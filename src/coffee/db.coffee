@@ -1,4 +1,5 @@
 mysql = require 'mysql'
+imagesearch = require './imagesearch'
 Q = require 'q'
 
 connection = mysql.createConnection
@@ -57,3 +58,10 @@ createQuestionOrUpdateScore = (type, food1, food2, score) ->
     else
       createQuestion(type, food1, food2, score)
       #exports.connectAndQuery 'INSERT INTO questions (type, food1, food2, '
+
+exports.getAllFoods = ->
+  exports.connectAndQuery 'SELECT * FROM all_foods'
+
+exports.addImageFor = (food) ->
+  imagesearch.findImage(food.Name).then (url) ->
+    exports.connectAndQuery 'INSERT INTO food_images (id, url) VALUES (?, ?)', [food.id, url]

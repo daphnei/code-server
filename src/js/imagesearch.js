@@ -23,7 +23,7 @@
   exports.findImage = function(keyword) {
     var deferred, url;
     deferred = Q.defer();
-    keyword = keyword.replace('%', '').replace('@', '').replace(',', '');
+    keyword = keyword.replace('%', '').replace('@', '').replace(',', '').replace('+', '');
     console.log("In here yo!");
     url = "http://www.bing.com/images/search?q=" + keyword;
     http.get(url, function(stream) {
@@ -37,7 +37,7 @@
         startReadIndex = buffer.indexOf("imgurl:", buffer.indexOf("dg_u")) + 13;
         endReadIndex = buffer.indexOf('&quot;', startReadIndex);
         url = buffer.substring(startReadIndex, endReadIndex);
-        console.log(url);
+        console.log("Image is: " + url);
         return deferred.resolve(url);
       });
     });

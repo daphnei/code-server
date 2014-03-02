@@ -4,6 +4,7 @@ gen = require './question_gen'
 imagesearch = require './imagesearch'
 
 app = express()
+populating = no
 
 app.get('/questions', (req, res) ->
   {type, limit} = req.query
@@ -49,5 +50,21 @@ app.post '/answer', (req, res) ->
   .catch ->
     res.send(422)
 
+addImageOnDelay = (row, interval) ->
+  setTimeout ->
+    db.addImageFor(row)
+  , interval
+
+app.get '/populate', (req, res) ->
+  res.send(403) if populating
+
+  populating = yes
+  db.getAllFoods().then (data) ->
+    i = 0
+    for row in data
+      addImageOnDelay(row, i)
+      i += 3000
+
+    res.send(200)
 
 app.listen(process.env.PORT or 3000)

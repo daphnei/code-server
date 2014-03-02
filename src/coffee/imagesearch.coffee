@@ -14,7 +14,7 @@ baseUrl = 'https://www.googleapis.com/customsearch/v1?'
 exports.findImage = (keyword) ->
 	deferred = Q.defer()
 
-	keyword = keyword.replace('%', '').replace('@', '').replace(',', '')
+	keyword = keyword.replace('%', '').replace('@', '').replace(',', '').replace('+', '')
 
 	console.log("In here yo!")
 	#&imgType=#{imgType}&
@@ -27,7 +27,7 @@ exports.findImage = (keyword) ->
 			startReadIndex = buffer.indexOf("imgurl:", buffer.indexOf("dg_u")) + 13
 			endReadIndex = buffer.indexOf('&quot;', startReadIndex)
 			url = buffer.substring(startReadIndex, endReadIndex)
-			console.log url
+			console.log "Image is: " + url
 			deferred.resolve url
 
 	return deferred.promise
