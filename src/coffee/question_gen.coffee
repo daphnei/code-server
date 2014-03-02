@@ -27,15 +27,21 @@ make_food = (id, name, genre, value, measure, unit, url) ->
     image_url: url
   }
 
-exports.generateQuestions = (type, count) ->
+exports.generateQuestions = (type, count, index) ->
   deferred = Q.defer()
 
   queryString = null
 
   if (type == exports.a_per_b_question)
-    rand_index = parseInt(Math.random() * fields.length)
-    chosen_field = fields[rand_index]
-    unit_for_chosen = units[rand_index]
+    chosen_field = ''
+    unit_for_chosen = ''
+    if (index?)
+      chosen_field = fields[index]
+      unit_for_chosen = units[index]
+    else
+      rand_index = parseInt(Math.random() * fields.length)
+      chosen_field = fields[rand_index]
+      unit_for_chosen = units[rand_index]
 
     queryString = "select t1.Name as Name1, t1.Genre as Genre1, t1.Measure as Measure1, t1.Unit as Unit1, t1.#{chosen_field} as Value1, t1.id as id1, t1.url as url1,
                           t2.Name as Name2, t2.Genre as Genre2, t2.Measure as Measure2, t2.Unit as Unit2, t2.#{chosen_field} as Value2, t2.id as id2, t2.url as url2
@@ -44,9 +50,16 @@ exports.generateQuestions = (type, count) ->
                   AND t1.#{chosen_field} >= 2 * t2.#{chosen_field} AND t1.#{chosen_field} <= 10 * t2.#{chosen_field}
                   ORDER BY RAND() LIMIT #{count};"
   else if (type == exports.comparision_question)
-    rand_index = parseInt(Math.random() * fields.length)
-    chosen_field = fields[rand_index]
-    unit_for_chosen = units[rand_index]
+    chosen_field = ''
+    unit_for_chosen = ''
+    console.log("ehjfiowejgrowie: " + index)
+    if (index?)
+      chosen_field = fields[index]
+      unit_for_chosen = units[index]
+    else
+      rand_index = parseInt(Math.random() * fields.length)
+      chosen_field = fields[rand_index]
+      unit_for_chosen = units[rand_index]
 
     queryString =  "SELECT t1.Name as Name1, t1.Genre as Genre1, t1.Unit as Unit1, t1.Measure as Measure1, t1.#{chosen_field} as Value1, t1.id as id1, t1.url as url1,
                            t2.Name as Name2, t2.Genre as Genre2, t2.Unit as Unit2, t2.Measure as Measure2, t2.#{chosen_field} as Value2, t2.id as id2, t2.url as url2
@@ -79,7 +92,7 @@ exports.generateRandomQuestionSet = (count = 10) ->
   questions = Q.defer()
 
   generatedDataPromises = []
-  for i in [0 .. count]
+  for i in [0 ... count]
     types = [exports.a_per_b_question, exports.comparision_question]
     type = types[parseInt(Math.random() * types.length)]
     generatedDataPromises.push(exports.generateQuestions(type, 1))
@@ -89,3 +102,4 @@ exports.generateRandomQuestionSet = (count = 10) ->
     questions.resolve(flattenData)
 
   return questions.promise
+

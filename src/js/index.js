@@ -45,10 +45,12 @@
   });
 
   app.get('/questions/generate', function(req, res) {
-    var count, type;
+    var count, index, type;
     type = req.query.type;
     count = req.query.count != null ? parseInt(req.query.count) : 1;
-    return gen.generateQuestions(type, count).then(function(data) {
+    index = req.query.index != null ? parseInt(req.query.index) : 1;
+    console.log("INDEX: " + index);
+    return gen.generateQuestions(type, count, index).then(function(data) {
       res.status(200);
       return res.send(data);
     });
@@ -66,6 +68,7 @@
   app.post('/answer', function(req, res) {
     var food1, food2, score, type, _ref;
     _ref = req.query, type = _ref.type, food1 = _ref.food1, food2 = _ref.food2, score = _ref.score;
+    console.log(req.query);
     return db.createQuestionOrUpdateScore(type, food1, food2, score).then(function() {
       return res.send(200);
     })["catch"](function() {

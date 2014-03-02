@@ -34,19 +34,34 @@
     };
   };
 
-  exports.generateQuestions = function(type, count) {
+  exports.generateQuestions = function(type, count, index) {
     var chosen_field, deferred, queryString, rand_index, unit_for_chosen;
     deferred = Q.defer();
     queryString = null;
     if (type === exports.a_per_b_question) {
-      rand_index = parseInt(Math.random() * fields.length);
-      chosen_field = fields[rand_index];
-      unit_for_chosen = units[rand_index];
+      chosen_field = '';
+      unit_for_chosen = '';
+      if ((index != null)) {
+        chosen_field = fields[index];
+        unit_for_chosen = units[index];
+      } else {
+        rand_index = parseInt(Math.random() * fields.length);
+        chosen_field = fields[rand_index];
+        unit_for_chosen = units[rand_index];
+      }
       queryString = "select t1.Name as Name1, t1.Genre as Genre1, t1.Measure as Measure1, t1.Unit as Unit1, t1." + chosen_field + " as Value1, t1.id as id1, t1.url as url1, t2.Name as Name2, t2.Genre as Genre2, t2.Measure as Measure2, t2.Unit as Unit2, t2." + chosen_field + " as Value2, t2.id as id2, t2.url as url2 FROM all_foods t1, all_foods t2 WHERE t1." + chosen_field + " > 0 and t2." + chosen_field + " > 0 AND t1." + chosen_field + " >= 2 * t2." + chosen_field + " AND t1." + chosen_field + " <= 10 * t2." + chosen_field + " ORDER BY RAND() LIMIT " + count + ";";
     } else if (type === exports.comparision_question) {
-      rand_index = parseInt(Math.random() * fields.length);
-      chosen_field = fields[rand_index];
-      unit_for_chosen = units[rand_index];
+      chosen_field = '';
+      unit_for_chosen = '';
+      console.log("ehjfiowejgrowie: " + index);
+      if ((index != null)) {
+        chosen_field = fields[index];
+        unit_for_chosen = units[index];
+      } else {
+        rand_index = parseInt(Math.random() * fields.length);
+        chosen_field = fields[rand_index];
+        unit_for_chosen = units[rand_index];
+      }
       queryString = "SELECT t1.Name as Name1, t1.Genre as Genre1, t1.Unit as Unit1, t1.Measure as Measure1, t1." + chosen_field + " as Value1, t1.id as id1, t1.url as url1, t2.Name as Name2, t2.Genre as Genre2, t2.Unit as Unit2, t2.Measure as Measure2, t2." + chosen_field + " as Value2, t2.id as id2, t2.url as url2 FROM all_foods t1, all_foods t2 WHERE t1." + chosen_field + " > 0 AND t2." + chosen_field + " > 0 AND  t2." + chosen_field + " >= 2 AND t1." + chosen_field + " >= 2 * t2." + chosen_field + " AND t1." + chosen_field + " < 5 * t2." + chosen_field + " ORDER BY RAND() LIMIT " + count + ";";
     }
     if (queryString !== null) {
@@ -79,7 +94,7 @@
     }
     questions = Q.defer();
     generatedDataPromises = [];
-    for (i = _i = 0; 0 <= count ? _i <= count : _i >= count; i = 0 <= count ? ++_i : --_i) {
+    for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
       types = [exports.a_per_b_question, exports.comparision_question];
       type = types[parseInt(Math.random() * types.length)];
       generatedDataPromises.push(exports.generateQuestions(type, 1));

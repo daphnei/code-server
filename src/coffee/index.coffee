@@ -31,8 +31,9 @@ app.get '/questions/generate/random', (req, res) ->
 app.get '/questions/generate', (req, res) ->
   type = req.query.type
   count = if req.query.count? then parseInt(req.query.count) else 1
-
-  gen.generateQuestions(type, count).then (data) ->
+  index = if req.query.index? then parseInt(req.query.index) else 1
+  console.log("INDEX: " + index)
+  gen.generateQuestions(type, count, index).then (data) ->
     res.status(200)
     res.send(data)
 
@@ -44,6 +45,7 @@ app.get '/image', (req, res) ->
 
 app.post '/answer', (req, res) ->
   {type, food1, food2, score} = req.query
+  console.log(req.query)
   db.createQuestionOrUpdateScore(type, food1, food2, score).then ->
     res.send(200)
   .catch ->
