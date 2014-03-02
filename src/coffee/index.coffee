@@ -42,8 +42,7 @@ app.get '/image', (req, res) ->
     res.send(data)
 
 app.post '/answer', (req, res) ->
-  {type, food1, food2, score} = req.params
-
+  {type, food1, food2, score} = req.query
   db.createQuestionOrUpdateScore(type, food1, food2, score).then ->
     res.send(200)
   .catch ->

@@ -4,11 +4,11 @@ imagesearch = require './imagesearch'
 Q = require 'q'
 _ = require 'underscore'
 
-a_per_b_question = "composition"
-comparision_question = "compare"
+exports.a_per_b_question = "composition"
+exports.comparision_question = "compare"
 
-fields = ["Energy", "Protein", "Carbohydrate", "Total_Sugar", "Cholesterol", "Vitamin_A", "Calcium"]
-units =  ["kcal",   "g",       "g",            "g",           "mg",          "RAE",        "mg"]
+fields = ["Energy", "Protein", "Carbohydrate", "Total_Sugar", "Cholesterol", "Vitamin_A", "Calcium", "Iron"]
+units =  ["kcal",   "g",       "g",            "g",           "mg",          "RAE",        "mg",     "mg"]
 
 insertQuestion = (question) ->
   # db.connectAndQuery 'INSERT INTO questions (type) VALUES (?)', [question.question_type]
@@ -34,7 +34,7 @@ exports.generateQuestions = (type, count) ->
 
   queryString = null
 
-  if (type == a_per_b_question)
+  if (type == exports.a_per_b_question)
     rand_index = parseInt(Math.random() * fields.length)
     chosen_field = fields[rand_index]
     unit_for_chosen = units[rand_index]
@@ -43,9 +43,10 @@ exports.generateQuestions = (type, count) ->
     queryString = "select t1.Name as Name1, t1.Genre as Genre1, t1.Measure as Measure1, t1.Unit as Unit1, t1.#{chosen_field} as Value1, t1.id as id1,
                   t2.Name as Name2, t2.Genre as Genre2, t2.Measure as Measure2, t2.Unit as Unit2, t2.#{chosen_field} as Value2, t2.id as id2
                   FROM all_foods t1, all_foods t2
-                  WHERE t1.#{chosen_field} > 0 and t2.#{chosen_field} > 0 and t1.#{chosen_field} > 5 * t2.#{chosen_field}
+                  WHERE t1.#{chosen_field} > 0 and t2.#{chosen_field} > 0
+                  AND t1.#{chosen_field} >= 2 * t2.#{chosen_field} AND t1.#{chosen_field} <= 10 * t2.#{chosen_field}
                   ORDER BY RAND() LIMIT #{count};"
-  else if (type == comparision_question)
+  else if (type == exports.comparision_question)
     rand_index = parseInt(Math.random() * fields.length)
     chosen_field = fields[rand_index]
     unit_for_chosen = units[rand_index]
@@ -91,7 +92,7 @@ exports.generateRandomQuestionSet = (count = 10) ->
 
   generatedDataPromises = []
   for i in [0 .. count]
-    types = [a_per_b_question, comparision_question]
+    types = [exports.a_per_b_question, exports.comparision_question]
     type = types[parseInt(Math.random() * types.length)]
     generatedDataPromises.push(exports.generateQuestions(type, 1))
 
