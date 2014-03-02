@@ -23,7 +23,7 @@
   exports.findImage = function(keyword) {
     var deferred, url;
     deferred = Q.defer();
-    keyword = keyword.replace('%', '');
+    keyword = keyword.replace('%', '').replace('@', '').replace(',', '');
     console.log("In here yo!");
     url = "http://www.bing.com/images/search?q=" + keyword;
     http.get(url, function(stream) {

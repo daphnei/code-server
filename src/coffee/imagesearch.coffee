@@ -14,7 +14,7 @@ baseUrl = 'https://www.googleapis.com/customsearch/v1?'
 exports.findImage = (keyword) ->
 	deferred = Q.defer()
 
-	keyword = keyword.replace('%', '')
+	keyword = keyword.replace('%', '').replace('@', '').replace(',', '')
 
 	console.log("In here yo!")
 	#&imgType=#{imgType}&
