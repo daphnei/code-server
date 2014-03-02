@@ -61,6 +61,16 @@
     });
   });
 
+  app.post('/answer', function(req, res) {
+    var food1, food2, score, type, _ref;
+    _ref = req.params, type = _ref.type, food1 = _ref.food1, food2 = _ref.food2, score = _ref.score;
+    return db.createQuestion(type, food1, food2, score).then(function() {
+      return res.send(200);
+    })["catch"](function() {
+      return res.send(422);
+    });
+  });
+
   app.listen(process.env.PORT || 3000);
 
 }).call(this);

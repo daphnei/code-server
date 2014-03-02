@@ -41,4 +41,12 @@ app.get '/image', (req, res) ->
     res.status(200)
     res.send(data)
 
+app.post '/answer', (req, res) ->
+  {type, food1, food2, score} = req.params
+
+  db.createQuestion(type, food1, food2, score).then ->
+    res.send(200)
+  .catch ->
+    res.send(422)
+
 app.listen(process.env.PORT or 3000)

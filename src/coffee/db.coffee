@@ -32,3 +32,17 @@ getNextQuestionId = ->
     nextId.resolve data['COUNT(*)']
 
   nextId.promise
+
+doesQuestionExist = (type, food1, food2) ->
+  weExist = q.defer()
+
+  exports.connectAndQuery 'SELECT COUNT(*) FROM questions WHERE type = ? AND food1 = ? AND food2 = ?', [type, food1, food2], (data) ->
+    weExist.resolve(parseInt(data["COUNT(*)"]) is 0)
+
+  weExist.promise
+
+createQuestionOrUpdateScore = (type, food1, food2, score) ->
+  doesQuestionExist(type, food1, food2).then (exists) ->
+    if exists
+      {}
+      #exports.connectAndQuery 'INSERT INTO questions (type, food1, food2, '
