@@ -2,9 +2,16 @@ express = require 'express'
 db = require './db'
 gen = require './question_gen'
 imagesearch = require './imagesearch'
+fs = require 'fs'
 
 app = express()
 populating = no
+
+
+data = fs.readFileSync('./src/js/compare_questions.json')
+otherData = fs.readFileSync('./src/js/composition_questions.json')
+questionData = JSON.parse(data).concat(JSON.parse(otherData))
+numQuestions = questionData.length
 
 app.get('/questions', (req, res) ->
   {type, limit} = req.query
@@ -32,10 +39,16 @@ app.get '/questions/generate', (req, res) ->
   type = req.query.type
   count = if req.query.count? then parseInt(req.query.count) else 1
   index = if req.query.index? then parseInt(req.query.index) else 1
-  console.log("INDEX: " + index)
-  gen.generateQuestions(type, count, index).then (data) ->
-    res.status(200)
-    res.send(data)
+
+app.get '/questions/cached', (req, res) ->
+  count = if req.query.count? then parseInt(req.query.count) else 1
+  questions = []
+  for i in [0..count]
+    index = Math.floor(Math.random() * numQuestions)
+    questions.push questionData[index]
+
+  res.json(questions)
+
 
 app.get '/image', (req, res) ->
   keyword = req.query.keyword
@@ -67,5 +80,7 @@ app.get '/populate', (req, res) ->
       i += 3000
 
     res.send(200)
+
+
 
 app.listen(process.env.PORT or 3000)
