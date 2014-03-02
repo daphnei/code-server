@@ -1,5 +1,6 @@
 index = require './index'
 db = require './db'
+imagesearch = require './imagesearch'
 Q = require 'q'
 _ = require 'underscore'
 
@@ -15,13 +16,14 @@ insertQuestion = (question) ->
   #   switch question.question_type
   #     when 'composition'
 
-make_food = (name, genre, value, measure, unit) ->
+make_food = (name, genre, value, measure, unit, image) ->
   return {
     name: name,
     genre: genre,
     value: value,
     serving_measure: measure,
     serving_unit: unit,
+    image: image
   }
 
 exports.generateQuestions = (type, count) ->
@@ -55,22 +57,27 @@ exports.generateQuestions = (type, count) ->
                     ORDER BY RAND() LIMIT #{count};"
 
   if (queryString != null)
-    db.connectAndQuery(queryString).then( (data) ->
+    db.connectAndQuery(queryString).then (data) ->
       console.log(data)
       data_to_send = []
+      addQuestionPromises = []
       for question in data
         insertQuestion(question)
-        element = {
-          question_type:type,
-          parameter:chosen_field,
-          unit: unit_for_chosen,
-          food1: make_food(question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1),
-          food2: make_food(question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2),
-        }
-        data_to_send.push(element)
+        imageNamePromises = [imagesearch.findImage(question.Name1), imagesearch.findImage(question.Name2)]
 
-      deferred.resolve(data_to_send)
-    )
+        addQuestionPromises.push Q.all(imageNamePromises).then ([image1, image2]) ->
+          element = {
+            question_type:type,
+            parameter:chosen_field,
+            unit: unit_for_chosen,
+            food1: make_food(question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1, image1),
+            food2: make_food(question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2, image2),
+          }
+          data_to_send.push(element)
+
+      Q.all(addQuestionPromises).then ->
+        deferred.resolve(data_to_send)
+
   else
     deferred.reject()
 
