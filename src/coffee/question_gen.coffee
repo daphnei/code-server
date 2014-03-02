@@ -37,7 +37,6 @@ exports.generateQuestions = (type, count) ->
     chosen_field = fields[rand_index]
     unit_for_chosen = units[rand_index]
 
-    console.log(chosen_field)
     queryString = "select t1.Name as Name1, t1.Genre as Genre1, t1.Measure as Measure1, t1.Unit as Unit1, t1.#{chosen_field} as Value1, t1.id as id1, t1.url as url1,
                           t2.Name as Name2, t2.Genre as Genre2, t2.Measure as Measure2, t2.Unit as Unit2, t2.#{chosen_field} as Value2, t2.id as id2, t2.url as url2
                   FROM all_foods t1, all_foods t2
@@ -59,8 +58,6 @@ exports.generateQuestions = (type, count) ->
   if (queryString != null)
     db.connectAndQuery(queryString).then (data) ->
       data_to_send = []
-      console.log("GOT")
-      console.log(data)
       for question in data
         element = {
           question_type:type,
