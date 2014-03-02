@@ -16,7 +16,7 @@ insertQuestion = (question) ->
   #   switch question.question_type
   #     when 'composition'
 
-make_food = (id, name, genre, value, measure, unit, image) ->
+make_food = (id, name, genre, value, measure, unit) ->
   return {
     id: id
     name: name,
@@ -24,13 +24,10 @@ make_food = (id, name, genre, value, measure, unit, image) ->
     value: value,
     serving_measure: measure,
     serving_unit: unit,
-    image: image
   }
 
 exports.generateQuestions = (type, count) ->
   deferred = Q.defer()
-
-  console.log("Generating question of type: " + type)
 
   queryString = null
 
@@ -59,27 +56,18 @@ exports.generateQuestions = (type, count) ->
 
   if (queryString != null)
     db.connectAndQuery(queryString).then (data) ->
-      console.log(data)
       data_to_send = []
-      addQuestionPromises = []
       for question in data
-        insertQuestion(question)
-        imageNamePromises = [imagesearch.findImage(question.Name1), imagesearch.findImage(question.Name2)]
+        element = {
+          question_type:type,
+          parameter:chosen_field,
+          unit: unit_for_chosen,
+          food1: make_food(question.id1, question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1),
+          food2: make_food(question.id2, question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2),
+        }
+        data_to_send.push(element)
 
-        addQuestionPromises.push(Q.all(imageNamePromises).then([image1, image2]) ->
-          element = {
-            question_type:type,
-            parameter:chosen_field,
-            unit: unit_for_chosen,
-            food1: make_food(question.id1, question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1, image1),
-            food2: make_food(question.id2, question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2, image2),
-          }
-          data_to_send.push(element))
-
-      console.log "question promises"
-      console.log addQuestionPromises
-      Q.all(addQuestionPromises).then ->
-        deferred.resolve(data_to_send)
+      deferred.resolve(data_to_send)
 
   else
     deferred.reject()
