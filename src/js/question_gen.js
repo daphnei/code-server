@@ -22,22 +22,20 @@
 
   insertQuestion = function(question) {};
 
-  make_food = function(id, name, genre, value, measure, unit, image) {
+  make_food = function(id, name, genre, value, measure, unit) {
     return {
       id: id,
       name: name,
       genre: genre,
       value: value,
       serving_measure: measure,
-      serving_unit: unit,
-      image: image
+      serving_unit: unit
     };
   };
 
   exports.generateQuestions = function(type, count) {
     var chosen_field, deferred, queryString, rand_index, unit_for_chosen;
     deferred = Q.defer();
-    console.log("Generating question of type: " + type);
     queryString = null;
     if (type === a_per_b_question) {
       rand_index = parseInt(Math.random() * fields.length);
@@ -53,31 +51,20 @@
     }
     if (queryString !== null) {
       db.connectAndQuery(queryString).then(function(data) {
-        var addQuestionPromises, data_to_send, imageNamePromises, question, _i, _len;
-        console.log(data);
+        var data_to_send, element, question, _i, _len;
         data_to_send = [];
-        addQuestionPromises = [];
         for (_i = 0, _len = data.length; _i < _len; _i++) {
           question = data[_i];
-          insertQuestion(question);
-          imageNamePromises = [imagesearch.findImage(question.Name1), imagesearch.findImage(question.Name2)];
-          addQuestionPromises.push(Q.all(imageNamePromises).then([image1, image2])(function() {
-            var element;
-            element = {
-              question_type: type,
-              parameter: chosen_field,
-              unit: unit_for_chosen,
-              food1: make_food(question.id1, question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1, image1),
-              food2: make_food(question.id2, question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2, image2)
-            };
-            return data_to_send.push(element);
-          }));
+          element = {
+            question_type: type,
+            parameter: chosen_field,
+            unit: unit_for_chosen,
+            food1: make_food(question.id1, question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1),
+            food2: make_food(question.id2, question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2)
+          };
+          data_to_send.push(element);
         }
-        console.log("question promises");
-        console.log(addQuestionPromises);
-        return Q.all(addQuestionPromises).then(function() {
-          return deferred.resolve(data_to_send);
-        });
+        return deferred.resolve(data_to_send);
       });
     } else {
       deferred.reject();

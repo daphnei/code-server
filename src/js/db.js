@@ -63,13 +63,13 @@
 
   updateQuestionScore = function(type, food1, food2, score) {
     var query;
-    query = "UPDATE questions SET num_answers = num_answers + 1, total_score = total_score + ? WHERE type = ? AND food1 = ? AND food2 = ?";
+    query = "UPDATE questions SET num_responses = num_responses + 1, total_score = total_score + ? WHERE type = ? AND food1 = ? AND food2 = ?";
     return exports.connectAndQuery(query, [score, type, food1, food2]);
   };
 
   createQuestion = function(type, food1, food2, score) {
     var query;
-    query = "INSERT INTO questions (type, food1, food2, num_answers, total_score) VALUES (?, ?, ?, ?, ?)";
+    query = "INSERT INTO questions (type, food1, food2, num_responses, total_score) VALUES (?, ?, ?, ?, ?)";
     return exports.connectAndQuery(query, [type, food1, food2, 1, score]);
   };
 

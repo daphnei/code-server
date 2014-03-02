@@ -62,9 +62,9 @@
   });
 
   app.post('/answer', function(req, res) {
-    var food1, food2, score, type, _ref;
-    _ref = req.params, type = _ref.type, food1 = _ref.food1, food2 = _ref.food2, score = _ref.score;
-    return db.createQuestionOrUpdateScore(type, food1, food2, score).then(function() {
+    var food1, food2, image_name, score, type, _ref;
+    _ref = req.params, type = _ref.type, food1 = _ref.food1, food2 = _ref.food2, score = _ref.score, image_name = _ref.image_name;
+    return db.createQuestionOrUpdateScore(type, food1, food2, score, image_name).then(function() {
       return res.send(200);
     })["catch"](function() {
       return res.send(422);
