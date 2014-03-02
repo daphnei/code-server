@@ -14,6 +14,8 @@ baseUrl = 'https://www.googleapis.com/customsearch/v1?'
 exports.findImage = (keyword) ->
 	deferred = Q.defer()
 
+	keyword = keyword.replace('%', '')
+
 	console.log("In here yo!")
 	#&imgType=#{imgType}&
 	url = "#{baseUrl}q=#{keyword}&cx=#{cx}&key=#{key}&num=#{num}&safe=#{safe}&searchType=#{searchType}&rights=cc_publicdomain+cc_noncommercial"
@@ -23,6 +25,8 @@ exports.findImage = (keyword) ->
 		stream.on 'data', (packet) ->
 			buffer += packet
 		stream.on 'end', () ->
+			console.log "Buffer is: "
+			console.log buffer
 			data = JSON.parse(buffer)
 			console.log(buffer)
 			if (data? && data.items? && data.items.length > 0)
@@ -34,3 +38,4 @@ exports.findImage = (keyword) ->
 				deferred.reject()
 
 	return deferred.promise
+

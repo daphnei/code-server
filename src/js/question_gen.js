@@ -22,8 +22,9 @@
 
   insertQuestion = function(question) {};
 
-  make_food = function(name, genre, value, measure, unit, image) {
+  make_food = function(id, name, genre, value, measure, unit, image) {
     return {
+      id: id,
       name: name,
       genre: genre,
       value: value,
@@ -60,19 +61,20 @@
           question = data[_i];
           insertQuestion(question);
           imageNamePromises = [imagesearch.findImage(question.Name1), imagesearch.findImage(question.Name2)];
-          addQuestionPromises.push(Q.all(imageNamePromises).then(function(_arg) {
-            var element, image1, image2;
-            image1 = _arg[0], image2 = _arg[1];
+          addQuestionPromises.push(Q.all(imageNamePromises).then([image1, image2])(function() {
+            var element;
             element = {
               question_type: type,
               parameter: chosen_field,
               unit: unit_for_chosen,
-              food1: make_food(question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1, image1),
-              food2: make_food(question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2, image2)
+              food1: make_food(question.id1, question.Name1, question.Genre1, question.Value1, question.Measure1, question.Unit1, image1),
+              food2: make_food(question.id2, question.Name2, question.Genre2, question.Value2, question.Measure2, question.Unit2, image2)
             };
             return data_to_send.push(element);
           }));
         }
+        console.log("question promises");
+        console.log(addQuestionPromises);
         return Q.all(addQuestionPromises).then(function() {
           return deferred.resolve(data_to_send);
         });
