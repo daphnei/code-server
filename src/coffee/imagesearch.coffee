@@ -1,4 +1,4 @@
-https = require("https")
+http = require("http")
 Q = require("q")
 
 cx = '017716653312651474242%3Af1wy4gpl-78'
@@ -18,24 +18,17 @@ exports.findImage = (keyword) ->
 
 	console.log("In here yo!")
 	#&imgType=#{imgType}&
-	url = "#{baseUrl}q=#{keyword}&cx=#{cx}&key=#{key}&num=#{num}&safe=#{safe}&searchType=#{searchType}&rights=cc_publicdomain+cc_noncommercial"
-	https.get url, (stream) ->
-		console.log(url)
+	url = "http://www.bing.com/images/search?q=#{keyword}"
+	http.get url, (stream) ->
 		buffer = ""
 		stream.on 'data', (packet) ->
 			buffer += packet
 		stream.on 'end', () ->
-			console.log "Buffer is: "
-			console.log buffer
-			data = JSON.parse(buffer)
-			console.log(buffer)
-			if (data? && data.items? && data.items.length > 0)
-				console.log "GOOD"
-				imageLink = data.items[0].link
-				deferred.resolve(imageLink)
-			else
-				console.log "BAD"
-				deferred.reject()
+			startReadIndex = buffer.indexOf("imgurl:", buffer.indexOf("dg_u")) + 13
+			endReadIndex = buffer.indexOf('&quot;', startReadIndex)
+			url = buffer.substring(startReadIndex, endReadIndex)
+			console.log url
+			deferred.resolve url
 
 	return deferred.promise
 
